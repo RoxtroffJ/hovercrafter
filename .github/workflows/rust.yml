@@ -52,7 +52,6 @@ jobs:
       run: |
         echo "GTK_LIB_DIR=C:\msys64\mingew64\bin PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
         echo "C:\msys64\mingw64\bin;C:\msys64\usr\bin;C:\msys64\mingw64\include" >> $GITHUB_PATH
-        echo "PKG_CONFIG_PATH=/mingw64/lib/pkgconfig" >> $GITHUB_ENV
     
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
@@ -64,6 +63,7 @@ jobs:
     
     - name: Build
       run: cargo build --release
+      shell: cmd
     
     - uses: actions/upload-artifact@v4
       with:

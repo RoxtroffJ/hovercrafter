@@ -47,11 +47,12 @@ jobs:
       with:
         msystem: MINGW64
         install: >-
-          mingw-w64-x86_64-gtk4
-          mingw-w64-x86_64-toolchain
-          mingw-w64-x86_64-pkg-config
-          mingw-w64-x86_64-glib2
-          mingw-w64-x86_64-make
+          mingw-w64-x86_64-gtk4 
+          mingw-w64-x86_64-gettext 
+          mingw-w64-x86_64-libxml2 
+          mingw-w64-x86_64-librsvg 
+          mingw-w64-x86_64-pkgconf 
+          mingw-w64-x86_64-gcc
         update: true
 
     - name: Set Environment Variables
@@ -60,16 +61,14 @@ jobs:
         echo "PKG_CONFIG_PATH=/mingw64/lib/pkgconfig" >> $GITHUB_ENV
         echo "PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1" >> $GITHUB_ENV
         echo "CARGO_PKG_CONFIG=pkg-config" >> $GITHUB_ENV
-        echo "PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin;$env:PATH" >> $GITHUB_ENV
-
-    - name: Verify pkg-config
+        echo "PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin;C:\msys64\mingw64\include;$env:PATH" >> $GITHUB_ENV
+    
+    - name: Setup GNU toolchain for Rust
       run: |
-        which pkg-config
-        pkg-config --version
-        pkg-config --modversion glib-2.0
+        rustup toolchain install stable-gnu
+        rustup default stable-gnu
     
     - name: Build
-      shell: cmd
       run: cargo build --release
     
     - uses: actions/upload-artifact@v4

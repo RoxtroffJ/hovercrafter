@@ -11,13 +11,23 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/gtk-rs/gtk4-rs/gtk4:latest # TODO enable minor version tags / pinning
+    
     steps:
+    
     - uses: actions/checkout@v3
+    
     - uses: actions-rs/toolchain@v1
       with:
         profile: minimal
         toolchain: stable
+    
     - name: Build
       run: cargo build
+    
     - name: Test
       run: cargo test
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: hovercrafter-linux
+        path: ${{ github.workspace }}/target/release/main

@@ -58,6 +58,7 @@ jobs:
 
         echo $GITHUB_ENV
         echo $GITHUB_PATH
+        echo $PKG_CONFIG_PATH
     
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable

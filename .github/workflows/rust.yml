@@ -36,30 +36,21 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-
-    - name: Install MSYS2 and GTK4
-      uses: msys2/setup-msys2@v2
-      with:
-        update: true
-
-    - name: GTK install
-      shell: msys2 {0}
-      run: pacman --noconfirm -S mingw-w64-x86_64-gtk4 mingw-w64-x86_64-gettext mingw-w64-x86_64-libxml2 mingw-w64-x86_64-librsvg mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gcc
-
-    - uses: actions/checkout@v4
-
-    - name: Set Environment Variables
-      run: |
-        echo "GTK_LIB_DIR=C:\msys64\mingew64\bin PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
-        echo "C:\msys64\mingw64\bin;C:\msys64\usr\bin;C:\msys64\mingw64\include" >> $GITHUB_PATH
     
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
     
-    - name: Setup GNU toolchain for Rust
+    - name: Install GTK4
       run: |
-        rustup toolchain install stable-gnu
-        rustup default stable-gnu
+        choco install -y vcpkg
+        vcpkg install gtk:x64-windows
+
+    - name: Set up environment variables
+      run: |
+        echo "VCPKG_ROOT=C:\\vcpkg" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "GTK4_DIR=C:\\vcpkg\\installed\\x64-windows" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "PKG_CONFIG_PATH=C:\\vcpkg\\installed\\x64-windows\\lib\\pkgconfig" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "Path=C:\\vcpkg\\installed\\x64-windows\\bin;$env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
     
     - name: Build
       run: cargo build --release

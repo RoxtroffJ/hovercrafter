@@ -1,0 +1,64 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+    container:
+      image: ghcr.io/gtk-rs/gtk4-rs/gtk4:latest # TODO enable minor version tags / pinning
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+    
+    - name: Build
+      run: cargo build --verbose
+    
+    - name: Run tests
+      run: cargo test --verbose
+
+    - name: Package Windows Installer (Inno Setup)
+      if: runner.os == 'Windows'
+      run: |
+        choco install -y innosetup
+        iscc installer/setup.iss
+        
+    - name: Package Linux AppImage
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt install -y appimagetool
+        mkdir -p MyRustApp.AppDir/usr/bin
+        cp target/release/myrustapp MyRustApp.AppDir/usr/bin/
+        appimagetool MyRustApp.AppDir MyRustApp.AppImage
+
+    - name: Package macOS DMG
+      if: runner.os == 'macOS'
+      run: |
+        brew install create-dmg
+        create-dmg target/release/myrustapp --dmg-title="MyRustApp Installer" --overwrite
+
+    - name: Upload Installer as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ runner.os }}-installer
+        path: |
+          MyRustAppInstaller.exe
+          MyRustApp.AppImage
+          MyRustApp.dmg

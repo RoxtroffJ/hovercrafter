@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/gtk-rs/gtk4-rs/gtk4:latest # TODO enable minor version tags / pinning
@@ -20,12 +20,49 @@ jobs:
       with:
         profile: minimal
         toolchain: stable
+
+    - name: Test
+      run: cargo test
     
     - name: Build
       run: cargo build --release
     
-    - name: Test
-      run: cargo test
+    - uses: actions/upload-artifact@v4
+      with:
+        name: hovercrafter-linux
+        path: ${{ github.workspace }}/target/release/main
+
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    
+    - uses: actions/checkout@v3
+    
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+
+    - name: Install MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+          msystem: MINGW64
+          install: >-
+            mingw-w64-x86_64-gtk4
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-pkg-config
+            mingw-w64-x86_64-cmake
+          update: true
+
+    - name: Set Environment Variables
+      run: |
+          echo "PKG_CONFIG_PATH=/mingw64/lib/pkgconfig" >> $GITHUB_ENV
+          echo "PATH=/mingw64/bin:$PATH" >> $GITHUB_ENV
+      shell: bash
+    
+    - name: Build
+      run: cargo build --release
     
     - uses: actions/upload-artifact@v4
       with:

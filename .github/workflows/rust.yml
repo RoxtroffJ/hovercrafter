@@ -44,7 +44,7 @@ jobs:
 
     - name: GTK install
       shell: msys2 {0}
-      run: pacman --noconfirm -S mingw-w64-x86_64-gtk4 mingw-w64-x86_64-gettext mingw-w64-x86_64-libxml2 mingw-w64-x86_64-librsvg mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc
+      run: pacman --noconfirm -S mingw-w64-x86_64-gtk4 mingw-w64-x86_64-gettext mingw-w64-x86_64-libxml2 mingw-w64-x86_64-librsvg mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gcc
 
     
     - uses: actions/checkout@v4

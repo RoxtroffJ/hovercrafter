@@ -44,25 +44,25 @@ jobs:
         profile: minimal
         toolchain: stable
 
-    - name: Install MSYS2
+    - name: Install MSYS2 and GTK4
       uses: msys2/setup-msys2@v2
       with:
-          msystem: MINGW64
-          install: >-
-            mingw-w64-x86_64-gtk4
-            mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-pkg-config
-            mingw-w64-x86_64-cmake
-          update: true
+        msystem: MINGW64
+        install: >-
+          mingw-w64-x86_64-gtk4
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-pkg-config
+          mingw-w64-x86_64-cmake
+        update: true
 
     - name: Set Environment Variables
       run: |
-          echo "PKG_CONFIG_PATH=/mingw64/lib/pkgconfig" >> $GITHUB_ENV
-          echo "PATH=/mingw64/bin:$PATH" >> $GITHUB_ENV
+        echo "PKG_CONFIG_PATH=/mingw64/lib/pkgconfig" >> $GITHUB_ENV
+        echo "CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc" >> $GITHUB_ENV
       shell: bash
     
     - name: Build
-      shell: msys2 {0}
+      shell: cmd
       run: cargo build --release
     
     - uses: actions/upload-artifact@v4

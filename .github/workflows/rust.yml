@@ -35,12 +35,10 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
-    
-    - uses: actions/checkout@v3
-    
-    - name: Set up Rust
-      uses: dtolnay/rust-toolchain@stable
 
     - name: Install MSYS2 and GTK4
       uses: msys2/setup-msys2@v2
@@ -54,6 +52,11 @@ jobs:
           mingw-w64-x86_64-pkgconf 
           mingw-w64-x86_64-gcc
         update: true
+    
+    - uses: actions/checkout@v4
+    
+    - name: Set up Rust
+      uses: dtolnay/rust-toolchain@stable
 
     - name: Set Environment Variables
       run: |
@@ -70,7 +73,6 @@ jobs:
     
     - name: Build
       run: cargo build --release
-      shell: msys2 {0}
     
     - uses: actions/upload-artifact@v4
       with:

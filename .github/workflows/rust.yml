@@ -57,11 +57,8 @@ jobs:
 
     - name: Set Environment Variables
       run: |
-        echo "CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc" >> $GITHUB_ENV
-        echo "PKG_CONFIG_PATH=/mingw64/lib/pkgconfig" >> $GITHUB_ENV
-        echo "PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1" >> $GITHUB_ENV
-        echo "CARGO_PKG_CONFIG=pkg-config" >> $GITHUB_ENV
         echo "PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin;C:\msys64\mingw64\include;$env:PATH" >> $GITHUB_ENV
+        echo "GTK_LIB_DIR=C:\msys64\mingew64\bin PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
     
     - name: Setup GNU toolchain for Rust
       run: |

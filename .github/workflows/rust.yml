@@ -62,4 +62,4 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: hovercrafter-windows
-        path: ${{ github.workspace }}/target/release/main.exe
+        path: ${{ github.workspace }}/target/release

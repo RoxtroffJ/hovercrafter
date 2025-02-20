@@ -1,31 +1,61 @@
-//! User Interface module. It provides all the functions to build the UI, and link it to the physics engine
+//! The graphics library of the app.
+//! It is based on [relm4] (which itself uses [gtk4](relm4::gtk)).
+//! It defines all the components, and all the app structure.
 
-use relm4::{gtk, ComponentParts, RelmApp, RelmWidgetExt, SimpleComponent};
-use relm4::gtk::prelude::*;
+use relm4::{gtk::{self, prelude::GtkWindowExt}, ComponentParts, RelmApp, SimpleComponent};
 
-/// The type of the UI. 
+
+/// All the standalone components are defined in this module.
+pub mod components;
+use components::*;
+/// The app's pages are defined in this module.
+pub mod pages;
+// use pages::*;
+
+/// Type for the whole app. 
 pub struct UI {
-    name: &'static str,
-    label: &'static str
+    title: &'static str,
+    margins: u8
 }
 
-struct UIModel {
-    label: &'static str
-}
+struct AppModel;
 
 #[relm4::component]
-impl SimpleComponent for UIModel {
+impl SimpleComponent for AppModel {
     type Init = UI;
     type Input = ();
     type Output = ();
 
     view! {
-        #[name = "app_window"]
+        #[root]
         gtk::ApplicationWindow {
-            gtk::Label {
-                set_margin_all: 5,
-                #[watch]
-                set_label: model.label
+
+            set_title: Some(title),
+
+            #[template]
+            PageTab(margins) {
+                #[template_child]
+                stack {
+                    #[template]
+                    add_titled[Some("motorisatiob_page"), "Motorisation"] = &Placeholder(margins) {
+                        set_label: "Motorisation"
+                    },
+
+                    #[template]
+                    add_titled[Some("levitation_page"), "Levitation"] = &Placeholder(margins) {
+                        set_label: "Levitation"
+                    },
+
+                    #[template]
+                    add_titled[Some("aero_page"), "Aerodynamics"] = &Placeholder(margins) {
+                        set_label: "Aerodynamics"
+                    },
+
+                    #[template]
+                    add_titled[Some("recap_page"), "Recap"] = &Placeholder(margins) {
+                        set_label: "Recap"
+                    }
+                }
             }
         }
     }
@@ -35,26 +65,25 @@ impl SimpleComponent for UIModel {
             root: Self::Root,
             _sender: relm4::ComponentSender<Self>,
         ) -> relm4::ComponentParts<Self> {
-        let model = UIModel{label: init.label};
-        let widgets = view_output!();
+        let margins= init.margins.into();
+        let title = init.title;
         
-        widgets.app_window.set_title(Some(init.name));
+        let model = AppModel;
+        let widgets = view_output!();
 
         ComponentParts {model, widgets}
     }
 }
 
 impl UI {
-    /// Creates a new UI. 
-    /// 
-    /// The app is named `name`, and displays the `label`.
-    pub fn new(name: &'static str, label: &'static str) -> Self {
-        Self {name, label}
+    /// Creates a new UI
+    pub fn new(title: &'static str, margins: u8) -> Self {
+        Self { title, margins }
     }
 
-    /// Starts the UI. It is identified by the OS with the given `id`.
+    /// Runs the UI with the given ID
     pub fn run(self, id: &'static str) {
         let app = RelmApp::new(id);
-        app.run::<UIModel>(self)
+        app.run::<AppModel>(self);
     }
 }
